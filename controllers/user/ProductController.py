@@ -20,3 +20,15 @@ def storeProduct(product):
         "message": "Thêm sản phẩm thành công !",
         "product": product
     }
+
+def handleProductDetail(product_id):
+    db=SessionLocal()
+    product= db.query(models.Product).filter(models.Product.id==product_id).first()
+    return {
+        "id":product.id,
+        "name":product.name,
+        "image":product.image,
+        "price":product.price,
+        "description":product.description,
+        "category_id ":product.category_id
+    }

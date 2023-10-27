@@ -1,7 +1,7 @@
 from fastapi import  FastAPI
 import models
 from database import engine
-from routes.user import auth,web,order
+from routes.user import auth,web,order,rating
 
 app = FastAPI()
 
@@ -12,3 +12,5 @@ app.include_router(auth.router)
 app.include_router(web.router)
 
 app.include_router(order.router)
+
+app.include_router(rating.router)

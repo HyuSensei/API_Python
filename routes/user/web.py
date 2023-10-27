@@ -15,7 +15,7 @@ class ProductBase(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-@router.get("/api/v1/products/home",status_code=status.HTTP_200_OK)
+@router.get("/api/v1/products",status_code=status.HTTP_200_OK)
 def getProductHome():
     try:
         data= ProductController.getProductHomeOne()
@@ -31,6 +31,16 @@ def addProduct(product: ProductBase):
     try:
         data_product= models.Product(**product.dict())
         get_product= ProductController.storeProduct(data_product)
+        return get_product
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+@router.get("/api/v1/products/{product_id}",status_code=status.HTTP_200_OK)
+def getProductDetail(product_id: int):
+    try:
+        get_product= ProductController.handleProductDetail(product_id)
         return get_product
     except ValueError as e:
         raise HTTPException(

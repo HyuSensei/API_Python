@@ -38,10 +38,51 @@ def handleOrder(order: OrderBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
+        
 @router.get("/api/v1/orderConfirm/{user_id}",status_code=status.HTTP_200_OK)
 def getOrderConfirm(user_id:int):
     try:
-        data_order= OrderController.hanleOrderConfirm(user_id)
+        data_order= OrderController.handleOrderConfirm(user_id)
+        return data_order
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+@router.get("/api/v1/orderShip/{user_id}",status_code=status.HTTP_200_OK)
+def getOrderShip(user_id:int):
+    try:
+        data_order= OrderController.handleOrderShip(user_id)
+        return data_order
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+@router.get("/api/v1/orderComplete/{user_id}",status_code=status.HTTP_200_OK)
+def getOrderShip(user_id:int):
+    try:
+        data_order= OrderController.handleOrderShip(user_id)
+        return data_order
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+@router.get("/api/v1/updateStatusOrder/{order_id}",status_code=status.HTTP_200_OK)
+def getUpdateStatus(order_id:int):
+    try:
+        data_order= OrderController.handleUpdateStatus(order_id)
+        return data_order
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+@router.get("/api/v1/orderRate/{user_id}/{order_id}")
+def getUpdateOrder(user_id:int,order_id:int):
+    try:
+        data_order= OrderController.handleOrderRate(user_id,order_id)
         return data_order
     except ValueError as e:
         raise HTTPException(
