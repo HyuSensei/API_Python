@@ -12,8 +12,6 @@ class User(Base):
     password= Column(String(250))
     address= Column(String(250))
     role_id = Column(Integer, ForeignKey('roles.id'))
-    order = relationship("Order", backref=backref("users", cascade="all, delete"))
-    rate = relationship("Rate", backref=backref("users", cascade="all, delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -21,7 +19,6 @@ class Role(Base):
     __tablename__ = 'roles'
     id= Column(Integer, primary_key=True, index=True)
     name= Column(String(250))
-    user = relationship("User", backref=backref("roles", cascade="all, delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -34,8 +31,6 @@ class Product(Base):
     description= Column(String(250))
     quantity= Column(Integer)
     category_id= Column(Integer,ForeignKey('categories.id'))
-    order_product = relationship("OrderProduct", backref=backref("products", cascade="all, delete"))
-    rate = relationship("Rate", backref=backref("products", cascade="all, delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -43,7 +38,7 @@ class Category(Base):
     __tablename__='categories'
     id= Column(Integer, primary_key=True, index=True)
     name= Column(String(250))
-    product = relationship("Product", backref=backref("categories", cascade="all, delete"))
+    category_parent_id= Column(Integer, ForeignKey('category_parents.id'))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -57,8 +52,6 @@ class Order(Base):
     phone= Column(String(250))
     total= Column(Float)
     user_id= Column(Integer, ForeignKey('users.id'))
-    order_product = relationship("OrderProduct", backref=backref("orders", cascade="all, delete"))
-    rate = relationship("Rate", backref=backref("orders", cascade="all, delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -79,6 +72,13 @@ class Rate(Base):
     order_id= Column(Integer, ForeignKey('orders.id'))
     star= Column(Integer)
     comment= Column(Text)
+    createdAt = Column(DateTime, default=datetime.utcnow)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  
+
+class CategoryParent(Base):
+    __tablename__ ='category_parents'
+    id= Column(Integer, primary_key=True, index=True)
+    name= Column(String(250))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  
 

@@ -1,7 +1,7 @@
 from fastapi import HTTPException, status
 from database import SessionLocal
 import models 
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 
 def addOrder(data_order):
     db= SessionLocal()
@@ -74,8 +74,10 @@ def handleOrderConfirm(user):
             "address": order.address,
             "phone": order.phone,
             "user_id": order.user_id,
+            "total": order.total,
             "product_id": order_product.product_id,
             "quantity": order_product.quantity,
+            "product_price": product.price,
             "product_name": product.name,
             "product_image": product.image 
         }
@@ -117,10 +119,12 @@ def handleOrderShip(user):
             "address": order.address,
             "phone": order.phone,
             "user_id": order.user_id,
+            "total": order.total,
             "product_id": order_product.product_id,
             "quantity": order_product.quantity,
+            "product_price": product.price,
             "product_name": product.name,
-            "product_image": product.image 
+            "product_image": product.image  
         }
         check_last_order = db.query(func.max(models.OrderProduct.id)).filter(models.OrderProduct.order_id == order.id).scalar()
         if check_last_order not in max_order:
@@ -137,7 +141,7 @@ def handleOrderShip(user):
         "last_product": get_last_product
     }
 
-def handleOrderShip(user):
+def handleOrderComplete(user):
     db=SessionLocal()
     query = (
     db.query(models.Order, models.Product,models.OrderProduct)
@@ -151,6 +155,7 @@ def handleOrderShip(user):
     last_product=[]
     max_order=[]
     get_last_product=[]
+    count_check=[]
     for order, product, order_product in results:
         get_order={
             "id":order.id,
@@ -160,11 +165,22 @@ def handleOrderShip(user):
             "address": order.address,
             "phone": order.phone,
             "user_id": order.user_id,
+            "total": order.total,
             "product_id": order_product.product_id,
             "quantity": order_product.quantity,
+            "product_price": product.price,
             "product_name": product.name,
-            "product_image": product.image 
+            "product_image": product.image  
         }
+        count_rate_product = db.query(func.count(distinct(models.Rate.product_id))).filter(models.Rate.order_id==order.id).all()
+        count_order_product = db.query(func.count(distinct(models.OrderProduct.product_id))).filter(models.OrderProduct.order_id==order.id).all()
+        for count_rate, count_product in zip(count_rate_product, count_order_product):
+            count_result = {
+                "order_id": order.id,
+                "count_order_product": count_product[0],
+                "count_rate_product": count_rate[0]
+            }
+            count_check.append(count_result)
         check_last_order = db.query(func.max(models.OrderProduct.id)).filter(models.OrderProduct.order_id == order.id).scalar()
         if check_last_order not in max_order:
             max_order.append(check_last_order)
@@ -177,7 +193,8 @@ def handleOrderShip(user):
         "success":True,
         "message":"Thông tin đơn hàng đang vận chuyển !",
         "order": data_order,
-        "last_product": get_last_product
+        "last_product": get_last_product,
+        "check_rate":count_check
     }
 
 def handleUpdateStatus(order_id):
@@ -187,29 +204,17 @@ def handleUpdateStatus(order_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Không tồn tại đơn hàng !"
         )
-    check_order.status= 1
+    check_order.status=2
     db.commit()
     return {
         "success":True,
         "message":"Xác nhận đã nhận hàng thành công !"
     }
 
-
 def checkRateProduct(order_id,user_id):
     db=SessionLocal()
     get_rate= db.query(models.Rate).filter(models.Rate.user_id==user_id).filter(models.Rate.order_id==order_id).all()
-    return get_rate
-
-def countRate(order_id):
-    db=SessionLocal()
-    count_rate_id = db.query(func.count(models.Rate.id)).filter(models.Rate.order_id==order_id).scalar()
-    count_product_id = db.query(func.count(models.Rate.product_id)).filter(models.Rate.order_id==order_id).scalar()
-    return {
-        "order_id":order_id,
-        "count_rate_id":count_rate_id,
-        "count_product_id":count_product_id
-    }
-    
+    return get_rate    
     
 def handleOrderRate(user_id,order_id):
     db=SessionLocal()
@@ -219,10 +224,12 @@ def handleOrderRate(user_id,order_id):
     .join(models.Product, models.OrderProduct.product_id == models.Product.id)
     .filter(models.Order.user_id == user_id)
     .filter(models.Order.id == order_id)
+    .filter(models.Order.status == 2)
     )
     results = query.all()
     list_data_order=[]
     list_data_rate=[]
+    count_check=[]
     for order, product, order_product in results:
         get_order={
             "id":order.id,
@@ -232,25 +239,37 @@ def handleOrderRate(user_id,order_id):
             "address": order.address,
             "phone": order.phone,
             "user_id": order.user_id,
+            "total": order.total,
             "product_id": order_product.product_id,
             "quantity": order_product.quantity,
+            "product_price": product.price,
             "product_name": product.name,
-            "product_image": product.image 
+            "product_image": product.image  
         }
+        count_rate_product = db.query(func.count(distinct(models.Rate.product_id))).filter(models.Rate.order_id==order.id).all()
+        count_order_product = db.query(func.count(distinct(models.OrderProduct.product_id))).filter(models.OrderProduct.order_id==order.id).all()
+        for count_rate, count_product in zip(count_rate_product, count_order_product):
+            count_result = {
+                "order_id": order.id,
+                "count_order_product": count_product[0],
+                "count_rate_product": count_rate[0]
+            }
+            count_check.append(count_result)
         data_rate_order=checkRateProduct(order.id,order.user_id)
-        for rate in data_rate_order:
-           get_rate_order={
-            "id": rate.id,
-            "product_id": rate.product_id,
-            "user_id": rate.user_id,
-            "star": rate.star,
-            "comment": rate.comment,
-        }
-        list_data_rate.append(get_rate_order)    
+        if len(data_rate_order)>0:
+            for rate in data_rate_order:
+                get_rate_order={
+                    "id": rate.id,
+                    "product_id": rate.product_id,
+                    "user_id": rate.user_id,
+                    "star": rate.star,
+                    "comment": rate.comment,
+                }
+            list_data_rate.append(get_rate_order)    
         list_data_order.append(get_order)
     return {
         "success":True,
         "order": list_data_order,
-        "check_rate": list_data_rate
+        "get_rate": list_data_rate
     }
     

@@ -117,6 +117,18 @@ def authLoginUser(token):
             "message": "xác thực đăng nhập thành công !",
         }
         
+def handleGetUserLogin(user_id):
+    db=SessionLocal()
+    user= db.query(models.User).filter(models.User.id==user_id).first()
+    return {
+        "id":user.id,
+        "name":user.name,
+        "email":user.email,
+        "username":user.username,
+        "address":user.address
+    }
+    
+        
     
     
     

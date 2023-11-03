@@ -62,7 +62,7 @@ def getOrderShip(user_id:int):
 @router.get("/api/v1/orderComplete/{user_id}",status_code=status.HTTP_200_OK)
 def getOrderShip(user_id:int):
     try:
-        data_order= OrderController.handleOrderShip(user_id)
+        data_order= OrderController.handleOrderComplete(user_id)
         return data_order
     except ValueError as e:
         raise HTTPException(

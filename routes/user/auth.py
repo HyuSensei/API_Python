@@ -55,4 +55,15 @@ def authLogin(token:str):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
+
+@router.get("/api/v1/users/{user_id}",status_code=status.HTTP_200_OK)
+def getUserLogin(user_id:int):
+    try:
+        get_data= AuthController.handleGetUserLogin(user_id)
+        print(get_data)
+        return get_data
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
     
