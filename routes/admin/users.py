@@ -13,7 +13,24 @@ class UserBase(BaseModel):
     password : str
     address : str
     role_id : int
-
+@router.get("/api/v1/countUser",status_code=status.HTTP_201_CREATED)
+async def countUser():
+    try:
+        db_User  = AdminUserController.countUser()
+        return db_User
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        ) 
+@router.get("/api/v1/user/limit/{currentPage}",status_code=status.HTTP_201_CREATED)
+async def getUser(currentPage : int = Path(..., title="page", ge=1)):
+    try:
+        db_User  = AdminUserController.getUsers(currentPage)
+        return db_User
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
 @router.post("/addUser/",status_code=status.HTTP_201_CREATED)
 async def addUser(user: UserBase):
     try:
@@ -24,7 +41,7 @@ async def addUser(user: UserBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/user/{user_id}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/user/{user_id}",status_code=status.HTTP_201_CREATED)
 async def getUsersById(user_id: int = Path(..., title="id người dùng", ge=1)):
     try:
         db_user  = AdminUserController.getUserById(user_id)
@@ -33,7 +50,7 @@ async def getUsersById(user_id: int = Path(..., title="id người dùng", ge=1)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/userByUserName/{username}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/userByUserName/{username}",status_code=status.HTTP_201_CREATED)
 async def getUsersByUserName(username: str = Path(..., title="nhap ten nguoi dung")):
     try:
         db_user  = AdminUserController.getUserByUserName(username)
@@ -42,7 +59,16 @@ async def getUsersByUserName(username: str = Path(..., title="nhap ten nguoi dun
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.put("/updateUser/{user_id}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/userByUserNamePage/{username}/page/{currentPage}",status_code=status.HTTP_201_CREATED)
+async def getUsersByUserNamePage(username: str, currentPage: int = Path(..., title="nhap ten nguoi dung")):
+    try:
+        db_user  = AdminUserController.getUsersByUserNamePage(username, currentPage)
+        return db_user
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+@router.put("/api/v1/updateUser/{user_id}",status_code=status.HTTP_201_CREATED)
 async def updateUsers(user_id: int , user_data: UserBase):
     try:
         data_user = models.User(**user_data.dict())
@@ -52,7 +78,7 @@ async def updateUsers(user_id: int , user_data: UserBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.delete("/deleteUser/{user_id}",status_code=status.HTTP_201_CREATED)
+@router.delete("/api/v1/deleteUser/{user_id}",status_code=status.HTTP_201_CREATED)
 async def deleteUsers(user_id: int):
     try:
         db_user  = AdminUserController.deleteUser(user_id)

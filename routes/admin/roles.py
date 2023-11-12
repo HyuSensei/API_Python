@@ -19,7 +19,7 @@ async def addRole(role: RolesBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/getAllRole/",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/getAllRole/",status_code=status.HTTP_201_CREATED)
 async def getRole():
     try:
         db_role  = AdminRoleController.getRoles()

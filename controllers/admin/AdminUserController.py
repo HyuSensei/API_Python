@@ -1,6 +1,40 @@
 from fastapi import HTTPException, status
 from database import SessionLocal
-from models import User 
+from models import User
+from sqlalchemy import func
+
+def getUsers(currentPage):
+    try:
+        limit = 6
+        offset = (currentPage - 1) * limit
+        db = SessionLocal()
+        user = db.query(User).limit(limit).offset(offset).all()
+        return {
+            "success": True,
+            "message": "Tìm người dùng thành công!",
+            "users": user
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Tìm người dùng thất bại!",
+            "err": str(e)
+        }
+def countUser():
+    try:
+        db = SessionLocal()
+        user_count = db.query(func.count(User.id)).scalar()
+        return {
+            "success": True,
+            "message": "Số lượng người dùng đã được đếm!",
+            "data": user_count
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "Đếm người dùng thất bại!",
+            "err": str(e)
+        }
 def addUser(user):
     try:
         db = SessionLocal()
@@ -64,7 +98,7 @@ def getUserById(user_id):
         return {
             "success": True,
             "message":"Tìm người dùng thành công!",
-            "product": user
+            "user": user
         }
     except Exception as e:
         return {
@@ -80,6 +114,23 @@ def getUserByUserName(username):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Người dùng không tồn tại!"
             )
+        return {
+            "success": True,
+            "message":"Tìm người dùng thành công!",
+            "user": user
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message":"Tìm người dùng thất bại!",
+            "err": e
+        }
+def getUsersByUserNamePage(username, currentPage):
+    try:
+        limit = 6
+        offset = (currentPage - 1) * limit
+        db= SessionLocal()
+        user = db.query(User).filter(User.username.like(f"%{username}%")).limit(limit).offset(offset).all()
         return {
             "success": True,
             "message":"Tìm người dùng thành công!",
