@@ -21,7 +21,7 @@ class UserLogin(BaseModel):
     password: str
     class Config:
         arbitrary_types_allowed = True
-@router.post("/api/v1/loginAdmin/",status_code=status.HTTP_201_CREATED)
+@router.post("/api/v1/loginAdmin/",status_code=status.HTTP_200_OK)
 async def loginAdmin(user: UserLogin):
     try:
         data_user = models.User(**user.dict())
