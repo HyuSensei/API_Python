@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=D:\PythonWeb\API_Python\env
+set VIRTUAL_ENV=D:\python\python_api\api_pyrhon\env
 
 if not defined PROMPT set PROMPT=$P$G
 

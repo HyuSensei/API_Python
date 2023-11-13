@@ -12,6 +12,8 @@ class User(Base):
     password= Column(String(250))
     address= Column(String(250))
     role_id = Column(Integer, ForeignKey('roles.id'))
+    order = relationship("Order", backref=backref("users", cascade="save-update"))
+    rate = relationship("Rate", backref=backref("users", cascade="save-update"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -31,6 +33,8 @@ class Product(Base):
     description= Column(String(250))
     quantity= Column(Integer)
     category_id= Column(Integer,ForeignKey('categories.id'))
+    order_product = relationship("OrderProduct", backref=backref("products", cascade="delete"))
+    rate = relationship("Rate", backref=backref("products", cascade="delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -52,6 +56,8 @@ class Order(Base):
     phone= Column(String(250))
     total= Column(Float)
     user_id= Column(Integer, ForeignKey('users.id'))
+    order_product = relationship("OrderProduct", backref=backref("orders", cascade="delete"))
+    rate = relationship("Rate", backref=backref("orders", cascade="delete"))
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -61,6 +67,7 @@ class OrderProduct(Base):
     order_id= Column(Integer, ForeignKey('orders.id'))
     product_id= Column(Integer, ForeignKey('products.id'))
     quantity= Column(Integer)
+    product = relationship("Product")
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -72,6 +79,7 @@ class Rate(Base):
     order_id= Column(Integer, ForeignKey('orders.id'))
     star= Column(Integer)
     comment= Column(Text)
+    product = relationship("Product")
     createdAt = Column(DateTime, default=datetime.utcnow)
     updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)  
 
