@@ -10,27 +10,47 @@ def getStatistics():
     try:
         
         db= SessionLocal()
+        
+        #get Statistics 
         results = db.query(
             func.extract('month', Order.createdAt).label('month'),
             func.extract('year', Order.createdAt).label('year'),
             func.sum(Order.total).label('total_income')
         ).group_by('year', 'month').all()
-
         result_dict = {(result.year, result.month): result.total_income for result in results}
-
-        # Get the start of the current year
         start_of_year = datetime(datetime.now().year, 1, 1)
-
-        # Generate a list of months from the start of the year until now
         months = [(start_of_year + relativedelta(months=i)).month for i in range(12)]
-
-        # Create a list of results with 0 for months without income
         final_results = [
             {"year": datetime.now().year, "month": month, "total_income": result_dict.get((datetime.now().year, month), 0)}
             for month in months
         ]
+        
+        
+        #get Statistics by month
+        start_of_month = datetime(datetime.now().year, datetime.now().month, 1)
+        end_of_month = start_of_month + relativedelta(day=31)
+        total_revenue = db.query(func.sum(Order.total)).filter(Order.createdAt.between(start_of_month, end_of_month)).scalar()
 
-        return final_results
+        #get Statistics by year
+        current_year = datetime.now().year
+
+        # Thực hiện truy vấn để lấy doanh thu của năm hiện tại
+        results = (
+            db.query(func.sum(Order.total).label("total_revenue"))
+            .filter(extract('year', Order.createdAt) == current_year)
+            .first()
+        )
+
+        total_revenue = results.total_revenue if results.total_revenue is not None else 0
+        countrate = db.query(func.count(Rate.id)).scalar()
+
+
+        return {
+            "Statistics":final_results,
+            "StatisticsByMonth": {"StatisticsByMonth": total_revenue or 0},
+            "StatisticsByYear":{"year": current_year, "total_revenue": total_revenue},
+            "countrate": countrate
+        } 
     except Exception as e:
         return {
             "success": False,
@@ -82,6 +102,49 @@ def getCuontRate():
             "success": True,
             "message": "thành công!",
             "countrate": countrate
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "message": "thất bại!",
+            "err": str(e)
+        }
+def getProductAdmin():
+    try:
+        db = SessionLocal()
+        
+        #getProductRate
+        data = db.query(Rate).options(joinedload(Rate.product)).all()
+        
+        #getProductCategory
+        categories = db.query(Category).all()
+    
+        category_data = []
+        for category in categories:
+            product_count = db.query(func.count(Product.id)).filter(Product.category_id == category.id).scalar()
+            category_data.append({
+                'category_name': category.name,
+                'product_count': product_count
+            })
+        #getTopProductSale
+        result = (
+            db.query(Product, func.sum(OrderProduct.quantity))
+            .join(OrderProduct, Product.id == OrderProduct.product_id)
+            .group_by(Product.id)
+            .order_by(func.sum(OrderProduct.quantity).desc())
+            .all()
+        )
+        sold_products = [
+            {"product_id": product.id, "product_name": product.name, "sold_quantity": sold_quantity}
+            for product, sold_quantity in result
+        ]
+        return {
+            "success": True,
+            "message": "thành công!",
+            "getProductRate": data,
+            "getProductCategory": category_data,
+            "getTopProductSale": sold_products
+            
         }
     except Exception as e:
         return {

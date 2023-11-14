@@ -7,7 +7,7 @@ from pydantic import BaseModel
 router=APIRouter()
 
 
-@router.get("/api/v1/getAllOrder/",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/getAllOrder/",status_code=status.HTTP_200_OK)
 async def getAllOrder():
     try:
         db_order  = AdminOrderController.getAllOrder()
@@ -16,7 +16,7 @@ async def getAllOrder():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/getOrder/page/{currentPage}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/getOrder/page/{currentPage}",status_code=status.HTTP_200_OK)
 async def getOrderPage(currentPage: int):
     try:
         db_order  = AdminOrderController.getOrderPage(currentPage)

@@ -24,7 +24,7 @@ async def addProducts(product: ProductsBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/prodouct/limit/{currentPage}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/prodouct/limit/{currentPage}",status_code=status.HTTP_200_OK)
 async def getProduct(currentPage : int = Path(..., title="page", ge=1)):
     try:
         db_product  = AdminProductController.getProducts(currentPage)
@@ -33,7 +33,7 @@ async def getProduct(currentPage : int = Path(..., title="page", ge=1)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/prodouct/count",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/prodouct/count",status_code=status.HTTP_200_OK)
 async def getCountProduct():
     try:
         db_product  = AdminProductController.countProducts()
@@ -42,7 +42,7 @@ async def getCountProduct():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/product/{product_id}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/product/{product_id}",status_code=status.HTTP_200_OK)
 async def getProductsById(product_id: int = Path(..., title="ID sản phẩm cần lấy", ge=1)):
     try:
         db_product  = AdminProductController.getProductById(product_id)
@@ -52,7 +52,7 @@ async def getProductsById(product_id: int = Path(..., title="ID sản phẩm c�
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/productByName/{product_name}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/productByName/{product_name}",status_code=status.HTTP_200_OK)
 async def getProductsByName(product_name: str = Path(..., title="nhap ten san pham")):
     try:
         db_product  = AdminProductController.getProductByName(product_name)
@@ -61,7 +61,7 @@ async def getProductsByName(product_name: str = Path(..., title="nhap ten san ph
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/productByNamePage/{product_name}/page/{currentPage}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/productByNamePage/{product_name}/page/{currentPage}",status_code=status.HTTP_200_OK)
 async def getProductsByNamePage(product_name: str, currentPage: int = Path(..., title="nhap ten san pham")):
     try:
         db_product  = AdminProductController.getProductByNamePage(product_name, currentPage)

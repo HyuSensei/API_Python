@@ -13,7 +13,7 @@ class UserBase(BaseModel):
     password : str
     address : str
     role_id : int
-@router.get("/api/v1/countUser",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/countUser",status_code=status.HTTP_200_OK)
 async def countUser():
     try:
         db_User  = AdminUserController.countUser()
@@ -22,7 +22,7 @@ async def countUser():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         ) 
-@router.get("/api/v1/user/limit/{currentPage}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/user/limit/{currentPage}",status_code=status.HTTP_200_OK)
 async def getUser(currentPage : int = Path(..., title="page", ge=1)):
     try:
         db_User  = AdminUserController.getUsers(currentPage)
@@ -41,7 +41,7 @@ async def addUser(user: UserBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/user/{user_id}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/user/{user_id}",status_code=status.HTTP_200_OK)
 async def getUsersById(user_id: int = Path(..., title="id người dùng", ge=1)):
     try:
         db_user  = AdminUserController.getUserById(user_id)
@@ -50,7 +50,7 @@ async def getUsersById(user_id: int = Path(..., title="id người dùng", ge=1)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/userByUserName/{username}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/userByUserName/{username}",status_code=status.HTTP_200_OK)
 async def getUsersByUserName(username: str = Path(..., title="nhap ten nguoi dung")):
     try:
         db_user  = AdminUserController.getUserByUserName(username)
@@ -59,7 +59,7 @@ async def getUsersByUserName(username: str = Path(..., title="nhap ten nguoi dun
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.get("/api/v1/userByUserNamePage/{username}/page/{currentPage}",status_code=status.HTTP_201_CREATED)
+@router.get("/api/v1/userByUserNamePage/{username}/page/{currentPage}",status_code=status.HTTP_200_OK)
 async def getUsersByUserNamePage(username: str, currentPage: int = Path(..., title="nhap ten nguoi dung")):
     try:
         db_user  = AdminUserController.getUsersByUserNamePage(username, currentPage)
