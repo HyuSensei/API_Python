@@ -4,7 +4,7 @@ import models
 
 def getProductHomeOne():
     db=SessionLocal()
-    get_product= db.query(models.Product).all()
+    get_product= db.query(models.Product).filter(models.Product.category_id==1).all()
     return {
         "success":True,
         "product":get_product

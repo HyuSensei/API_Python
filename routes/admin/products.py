@@ -70,7 +70,7 @@ async def getProductsByNamePage(product_name: str, currentPage: int = Path(..., 
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.put("/api/v1/updateProduct/{product_id}",status_code=status.HTTP_201_CREATED)
+@router.put("/api/v1/updateProduct/{product_id}",status_code=status.HTTP_200_OK)
 async def updateProducts(product_id: int , product_data: ProductsBase):
     try:
         data_product = models.Product(**product_data.dict())
@@ -80,7 +80,7 @@ async def updateProducts(product_id: int , product_data: ProductsBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.delete("/api/v1/deleteProduct/{product_id}",status_code=status.HTTP_201_CREATED)
+@router.delete("/api/v1/deleteProduct/{product_id}",status_code=status.HTTP_200_OK)
 async def deleteProducts(product_id: int):
     try:
         db_product  = AdminProductController.deleteProduct(product_id)

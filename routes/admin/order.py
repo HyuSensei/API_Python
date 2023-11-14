@@ -25,7 +25,7 @@ async def getOrderPage(currentPage: int):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.put("/api/v1/confirmOrder/{order_id}",status_code=status.HTTP_201_CREATED)
+@router.put("/api/v1/confirmOrder/{order_id}",status_code=status.HTTP_200_OK)
 async def confirmOrder(order_id: int):
     try:
         db_order = AdminOrderController.confirmOrder(order_id)
@@ -34,7 +34,7 @@ async def confirmOrder(order_id: int):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )    
-@router.delete("/api/v1/deleteOrder/{order_id}",status_code=status.HTTP_201_CREATED)
+@router.delete("/api/v1/deleteOrder/{order_id}",status_code=status.HTTP_200_OK)
 async def deleteOrder(order_id: int):
     try:
         db_order = AdminOrderController.deleteOrder(order_id)

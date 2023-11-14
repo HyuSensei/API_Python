@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from database import SessionLocal
 import models
 
-def handleCategorySkinCare(id,page,limit):
+def handleCategory(id,page,limit):
     db=SessionLocal()
     get_category_skincare= db.query(models.Category).filter(models.Category.category_parent_id==1).all()
     get_category_makeup= db.query(models.Category).filter(models.Category.category_parent_id==2).all()

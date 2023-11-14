@@ -68,7 +68,7 @@ async def getUsersByUserNamePage(username: str, currentPage: int = Path(..., tit
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.put("/api/v1/updateUser/{user_id}",status_code=status.HTTP_201_CREATED)
+@router.put("/api/v1/updateUser/{user_id}",status_code=status.HTTP_200_OK)
 async def updateUsers(user_id: int , user_data: UserBase):
     try:
         data_user = models.User(**user_data.dict())
@@ -78,7 +78,7 @@ async def updateUsers(user_id: int , user_data: UserBase):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
         )
-@router.delete("/api/v1/deleteUser/{user_id}",status_code=status.HTTP_201_CREATED)
+@router.delete("/api/v1/deleteUser/{user_id}",status_code=status.HTTP_200_OK)
 async def deleteUsers(user_id: int):
     try:
         db_user  = AdminUserController.deleteUser(user_id)
